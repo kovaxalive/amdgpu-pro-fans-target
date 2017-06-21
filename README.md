@@ -20,6 +20,7 @@ sudo chmod +x amdgpu-pro-fans-target.py
 
 
 See optional arguments with -h flag:
+```sh
 $ sudo ./amdgpu-pro-fans-target.py -h
 [sudo] password for r: 
 usage: amdgpu-pro-fans-target.py [-h] [-u UPDATE_TIME] [-T TARGET_TEMP]
@@ -35,11 +36,13 @@ optional arguments:
   -m MIN_SPEED, --min-speed MIN_SPEED
                         Minimum fan speed of GPU in %. Warning: imprecise
                         (default: 40)
-
-####
-Note: this script has been based on amdgpu-pro 17.10, the file possible_fan_speeds.txt has been created to see what the actual speed becomes when a specific speed is set in the driver file.
-It is very likely that if you have a different driver version this script will not work as it is supposed to.
+```
 
 # Exit: Hit 'Q'. 
 Dont Ctrl+C if you dont want to fuck up your terminal.
+
+### Note
+This script has been based on amdgpu-pro 17.10, the file possible_fan_speeds.txt has been created to see what the actual speed becomes when a specific speed is set in the driver file.
+It is very likely that if you have a different driver version this script will not work as it is supposed to.
+
 
