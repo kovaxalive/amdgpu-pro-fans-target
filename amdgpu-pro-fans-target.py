@@ -13,6 +13,9 @@ parser.add_argument('-T', '--target-temp',
 parser.add_argument('-m', '--min-speed', 
 		help="Minimum fan speed of GPU in %%. Warning: imprecise", 
 		type=int, default=40)
+parser.add_argument('--dynamic-printing', 
+		help="Use curses to print in current terminal (experimental, try enlarging terminal)", 
+		type=bool, default=False)
 args = parser.parse_args()
 
 time_between_fan_check = args.update_time
@@ -212,7 +215,7 @@ class setFanSpeed:
 
 			margin_of_error = 2 # %
 
-			time.sleep(0.75) # Wait 100ms
+			time.sleep(0.75) 
 			
 			true_new_speed = current_fan_speed()
 
@@ -255,8 +258,18 @@ class setFanSpeed:
 				
 			
 ## Execution
+# Prevent current fan speeds below minimum from staying there
+a = setFanSpeed(min_speed)
 
-#print("Detected %i GPUs" % (len(a.cards)) )
+if not args.dynamic_printing:
+	print("Control+C to quit\n")
+	print("Detected %i GPUs" % (len(a.cards)), '\n')	
+	def update_curses(gpu_idx, temp, temp_diff, fan_rpm, fan_pct):
+		pass
+	while True:
+		a.set_all_fan_speeds(tempgoal=tempgoal)
+		time.sleep(time_between_fan_check)
+	exit()
 
 window = curses.initscr()
 curses.noecho()
@@ -264,8 +277,6 @@ curses.cbreak()
 curses.curs_set(0) # Hide cursor
 
 max_screen = tuple(numpy.subtract(window.getmaxyx(), (1, 1) ) ) 
-
-a = setFanSpeed(min_speed)
 
 def make_curses_coords():
 	global window
@@ -300,10 +311,11 @@ def update_curses(gpu_idx, temp, temp_diff, fan_rpm, fan_pct):
 	"Temp above goal:\t{temp_diff} `C\n".format(temp_diff=temp_diff) +\
 	"Fan speed:\t\t%.1f %%\t[ %i RPM ]" % (fan_pct, fan_rpm)
 
-	y, x = curses_positions[gpu_idx]
-
-	window.insstr(y, x, string)	
-
+	try:
+		y, x = curses_positions[gpu_idx]
+		window.insstr(y, x, string)	
+	except KeyError:
+		pass
 
 window.nodelay(1) # Make window.getch() non-blocking
 key=''
